@@ -1,6 +1,13 @@
-﻿namespace FreshHub_BE.Services.UserRepository
+﻿using FreshHub_BE.Data.Entities;
+
+namespace FreshHub_BE.Services.UserRepository
 {
     public interface IUserRepository
     {
+        public Task<User> Create(User user);
+        public Task Update(User user);
+        public Task Delete(int userId);
+        public Task<List<User>> GetAll();        
+        public Task<User> GetById(int userId);
     }
 }

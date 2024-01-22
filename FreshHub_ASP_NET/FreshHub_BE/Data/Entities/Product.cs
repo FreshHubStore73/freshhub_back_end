@@ -10,5 +10,7 @@
         public string Description { get; set; }
         public int Weight { get; set; }
 
+        public Category? Category { get; set; }
+
     }
 }

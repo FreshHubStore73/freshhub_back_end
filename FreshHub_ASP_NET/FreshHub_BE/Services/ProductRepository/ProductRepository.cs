@@ -25,7 +25,7 @@ namespace FreshHub_BE.Services.ProductRepository
             await appDbContext.SaveChangesAsync();
         }
 
-        public async Task <List<Product>> GetAll(int userId)
+        public async Task <List<Product>> GetAll()
         {
             return await appDbContext.Products.ToListAsync();
         }

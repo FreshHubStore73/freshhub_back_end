@@ -80,7 +80,7 @@ namespace FreshHub_BE.Migrations
 
             modelBuilder.Entity("FreshHub_BE.Data.Entities.Product", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -105,7 +105,7 @@ namespace FreshHub_BE.Migrations
                     b.Property<int>("Weight")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Products");
                 });

@@ -7,7 +7,7 @@ namespace FreshHub_BE.Services.ProductRepository
         public Task <Product> Create(Product product);
         public Task Update(Product product);
         public Task Delete(int productId);
-        public Task <List<Product>> GetAll(int userId);
+        public Task <List<Product>> GetAll();
         public Task <List<Product>> GetAllByCategory (int categoryId);
         public Task <Product> GetById(int productId);
     }

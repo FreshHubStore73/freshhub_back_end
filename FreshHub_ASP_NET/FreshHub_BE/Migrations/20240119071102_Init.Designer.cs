@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreshHub_BE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240117082510_Initial")]
-    partial class Initial
+    [Migration("20240119071102_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,7 +83,7 @@ namespace FreshHub_BE.Migrations
 
             modelBuilder.Entity("FreshHub_BE.Data.Entities.Product", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -108,7 +108,7 @@ namespace FreshHub_BE.Migrations
                     b.Property<int>("Weight")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Products");
                 });
