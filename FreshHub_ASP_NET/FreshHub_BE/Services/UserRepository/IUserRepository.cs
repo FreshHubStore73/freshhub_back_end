@@ -4,9 +4,9 @@ namespace FreshHub_BE.Services.UserRepository
 {
     public interface IUserRepository
     {
-        public Task<User> Create(User user);
+        //public Task<User> Create(User user);
+        //public Task Delete(int userId);
         public Task Update(User user);
-        public Task Delete(int userId);
         public Task<List<User>> GetAll();        
         public Task<User> GetById(int userId);
     }

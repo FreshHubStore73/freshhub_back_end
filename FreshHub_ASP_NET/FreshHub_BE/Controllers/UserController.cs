@@ -1,6 +1,5 @@
-﻿using FreshHub_BE.Data.Entities;
-using FreshHub_BE.Services.UserRepository;
-using Microsoft.AspNetCore.Http;
+﻿using FreshHub_BE.Models;
+using FreshHub_BE.Services.Registration;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FreshHub_BE.Controllers
@@ -9,17 +8,24 @@ namespace FreshHub_BE.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository userRepository;
+        private readonly IRegistrationService registrationService;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IRegistrationService registrationService)
         {
-            this.userRepository = userRepository;
+            this.registrationService = registrationService;
         }
 
-        [HttpGet]
-        public async Task<User> Create([FromBody] User user)
+        [HttpPost("[action]")]
+        public async Task<ActionResult> Register([FromBody] UserRegistrationModel user)
         {
-            return await userRepository.Create(user);
+            if (await registrationService.IsExists(user))
+            {
+                return BadRequest("Phone is taken.");
+            }
+
+            await registrationService.Registration(user);
+
+            return Ok();
         }
 
 

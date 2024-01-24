@@ -12,18 +12,18 @@ namespace FreshHub_BE.Services.UserRepository
         {
             this.appDbContext = appDbContext;
         }
-        public async Task<User> Create(User user)
-        {
-            appDbContext.Users.Add(user);
-            await appDbContext.SaveChangesAsync();
-            return user;
-        }
+        //public async Task<User> Create(User user)
+        //{
+        //    appDbContext.Users.Add(user);
+        //    await appDbContext.SaveChangesAsync();
+        //    return user;
+        //}
 
-        public async Task Delete(int userId)
-        {
-            appDbContext.Products.Remove(new Product() { Id = userId });
-            await appDbContext.SaveChangesAsync();
-        }
+        //public async Task Delete(int userId)
+        //{
+        //    appDbContext.Products.Remove(new Product() { Id = userId });
+        //    await appDbContext.SaveChangesAsync();
+        //}
 
         public async Task<List<User>> GetAll()
         {
