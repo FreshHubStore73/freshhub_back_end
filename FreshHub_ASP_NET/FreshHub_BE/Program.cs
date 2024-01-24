@@ -19,6 +19,7 @@ builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
     opt.TokenValidationParameters = new()
