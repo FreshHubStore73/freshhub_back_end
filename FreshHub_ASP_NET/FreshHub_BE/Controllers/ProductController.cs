@@ -23,7 +23,7 @@ namespace FreshHub_BE.Controllers
 
         [HttpGet("[action]")]
         public async Task<ActionResult<IEnumerable<Product>>> GetAll()
-        {
+        {           
             return Ok(await productRepository.GetAll());
         }
 

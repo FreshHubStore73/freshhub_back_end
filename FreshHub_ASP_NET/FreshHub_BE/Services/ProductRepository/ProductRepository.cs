@@ -27,7 +27,8 @@ namespace FreshHub_BE.Services.ProductRepository
 
         public async Task <List<Product>> GetAll()
         {
-            return await appDbContext.Products.ToListAsync();
+            
+            return await appDbContext.Products.Include(x=>x.Category).ToListAsync();
         }
 
         public async Task <List<Product>> GetAllByCategory(int categoryId)

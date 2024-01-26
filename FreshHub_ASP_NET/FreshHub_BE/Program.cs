@@ -1,4 +1,6 @@
 using FreshHub_BE.Data;
+using FreshHub_BE.Extensions;
+using FreshHub_BE.Middleware;
 using FreshHub_BE.Services.CategoryRepository;
 using FreshHub_BE.Services.ProductRepository;
 using FreshHub_BE.Services.Registration;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -38,19 +41,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(opt => 
+{
+    opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    opt.JsonSerializerOptions.WriteIndented = true;
+});
 
 var app = builder.Build();
+app.UseExceptionMiddleware();
 app.UseSwagger();
 app.UseSwaggerUI();
 //app.UseAuthentication();
 //app.UseAuthorization();
 
 
-//app.UseCors(builder => builder.AllowAnyHeader()
-//                              .AllowAnyMethod()
-//                              .AllowCredentials()
-//                              );
 app.MapControllers();
 using var scoped = app.Services.CreateScope();
 var services = scoped.ServiceProvider;
@@ -58,8 +62,12 @@ try
 {
 
     var context = services.GetRequiredService<AppDbContext>();
-    await context.Database.MigrateAsync();
-    await Seed.SeedCategory(context);
+    
+    if (!context.Categories.Any())
+    {
+        await context.Database.MigrateAsync();
+        await Seed.SeedCategory(context);
+    }
 }
 catch (Exception ex)
 {
