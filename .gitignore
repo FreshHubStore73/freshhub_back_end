@@ -401,3 +401,5 @@ FodyWeavers.xsd
 *.sln.iml
 FreshHub_ASP.NET/FreshHub_BE/.vs/FreshHub_BE/v17/.suo
 FreshHub_ASP.NET/FreshHub_BE/.vs/FreshHub_BE/v17/.wsuo
+FreshHub_ASP_NET/FreshHub_BE/freshHub.db-shm
+FreshHub_ASP_NET/FreshHub_BE/freshHub.db-wal

@@ -2,8 +2,10 @@ using FreshHub_BE.Data;
 using FreshHub_BE.Extensions;
 using FreshHub_BE.Middleware;
 using FreshHub_BE.Services.CategoryRepository;
+using FreshHub_BE.Services.LoginService;
 using FreshHub_BE.Services.ProductRepository;
 using FreshHub_BE.Services.Registration;
+using FreshHub_BE.Services.TokenService;
 using FreshHub_BE.Services.UserRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +26,8 @@ builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<IRegistrationService, RegistrationService>();
+builder.Services.AddTransient<ILoginService, LoginService>();
+builder.Services.AddTransient<ITokenService, TokenService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
