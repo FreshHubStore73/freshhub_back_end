@@ -33,12 +33,12 @@ namespace FreshHub_BE.Services.ProductRepository
 
         public async Task <List<Product>> GetAllByCategory(int categoryId)
         {
-           return await appDbContext.Products.Where(x => x.CategoryId == categoryId).ToListAsync();
+           return await appDbContext.Products.Include(x=>x.Category).Where(x => x.CategoryId == categoryId).ToListAsync();
         }
 
         public async Task <Product?> GetById(int productId)
         {
-            return await appDbContext.Products.FirstOrDefaultAsync(x=>x.Id == productId);
+            return await appDbContext.Products.Include(x=>x.Category).FirstOrDefaultAsync(x=>x.Id == productId);
         }
 
         public async Task Update(Product product)
@@ -46,5 +46,11 @@ namespace FreshHub_BE.Services.ProductRepository
            appDbContext.Entry(product).State = EntityState.Modified;
            await appDbContext.SaveChangesAsync();
         }
+
+        public async Task<bool> IsProductIdExsist(int Id)
+        { 
+            return await appDbContext.Products.AnyAsync(x=>x.Id == Id);
+        }
+
     }
 }

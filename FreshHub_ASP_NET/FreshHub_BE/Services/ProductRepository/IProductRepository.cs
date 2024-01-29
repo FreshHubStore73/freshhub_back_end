@@ -10,5 +10,6 @@ namespace FreshHub_BE.Services.ProductRepository
         public Task <List<Product>> GetAll();
         public Task <List<Product>> GetAllByCategory (int categoryId);
         public Task <Product> GetById(int productId);
+        public Task<bool> IsProductIdExsist(int Id);
     }
 }

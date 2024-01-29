@@ -23,7 +23,7 @@ namespace FreshHub_BE.Controllers
 
         [HttpGet("[action]")]
         public async Task<ActionResult<IEnumerable<Product>>> GetAll()
-        {           
+        {
             return Ok(await productRepository.GetAll());
         }
 
@@ -38,11 +38,23 @@ namespace FreshHub_BE.Controllers
         public async Task<ActionResult<IEnumerable<Product>>> GetAllByCategory(int Id)
         {
             var categories = await categoryRepository.GetAll();
-            if (!categories.Any(x=>x.Id == Id) )
+            if (!categories.Any(x => x.Id == Id))
             {
                 return BadRequest("iNVALID CATEGORY ID");
             }
             return Ok(await productRepository.GetAllByCategory(Id));
+        }
+
+        [HttpGet("[action]/{Id}")]
+
+        public async Task<ActionResult<Product>> GetProductById(int Id)
+        {
+            if (!await productRepository.IsProductIdExsist(Id))
+            {
+                return BadRequest("Product Id is not valid.");
+            }
+           return Ok(await productRepository.GetById(Id));
+
         }
     }
 }
