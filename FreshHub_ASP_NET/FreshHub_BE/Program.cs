@@ -11,7 +11,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using FluentValidation;
 using System.Text.Json.Serialization;
+using FreshHub_BE.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -28,6 +30,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<IRegistrationService, RegistrationService>();
 builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddValidatorsFromAssemblyContaining<UserLoginModel>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {

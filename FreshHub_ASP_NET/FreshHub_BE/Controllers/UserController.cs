@@ -1,4 +1,5 @@
-﻿using FreshHub_BE.Models;
+﻿using FluentValidation;
+using FreshHub_BE.Models;
 using FreshHub_BE.Services.LoginService;
 using FreshHub_BE.Services.Registration;
 using Microsoft.AspNetCore.Mvc;
@@ -11,16 +12,24 @@ namespace FreshHub_BE.Controllers
     {
         private readonly IRegistrationService registrationService;
         private readonly ILoginService loginService;
+        private readonly IValidator<UserLoginModel> loginValidator;
+        private readonly IValidator<UserRegistrationModel> registrationValidator;
 
-        public UserController(IRegistrationService registrationService, ILoginService loginService)
+        public UserController(IRegistrationService registrationService,
+                              ILoginService loginService, 
+                              IValidator<UserLoginModel> loginValidator, IValidator<UserRegistrationModel> registrationValidator)
         {
             this.registrationService = registrationService;
             this.loginService = loginService;
+            this.loginValidator = loginValidator;
+            this.registrationValidator = registrationValidator;
         }
 
         [HttpPost("[action]")]
         public async Task<ActionResult> Register([FromBody] UserRegistrationModel user)
         {
+            await registrationValidator.ValidateAndThrowAsync(user);
+
             user.Password = user.Password.Trim(' ');
             if (user.Password.Length < 4 || user.Password.Length > 8) 
             {
@@ -66,20 +75,9 @@ namespace FreshHub_BE.Controllers
         [HttpPost("[action]")]
 
         public async Task<ActionResult> Login([FromBody] UserLoginModel model)
-        {
+        {          
 
-
-            model.Password = model.Password.Trim(' ');
-            if (model.Password.Length < 4 || model.Password.Length > 8)
-            {
-                return Unauthorized("Bad password.");
-            }
-
-            model.PhoneNumber = model.PhoneNumber.Trim(' ');
-            if (model.PhoneNumber.Length != 12)
-            {
-                return Unauthorized("Bad nomber phone.");
-            }
+            await loginValidator.ValidateAndThrowAsync(model);
 
             var user = await loginService.Exsist(model);
             if (user == null)

@@ -1,4 +1,6 @@
-﻿using FreshHub_BE.Data.Entities;
+﻿using FluentValidation;
+using FreshHub_BE.Data.Entities;
+using FreshHub_BE.Models;
 using FreshHub_BE.Services.CategoryRepository;
 using FreshHub_BE.Services.ProductRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +16,13 @@ namespace FreshHub_BE.Controllers
     {
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
+        private readonly IValidator<ProductCreateModel> validator;
 
-        public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository)
+        public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository, IValidator<ProductCreateModel> validator)
         {
             this.productRepository = productRepository;
             this.categoryRepository = categoryRepository;
+            this.validator = validator;
         }
 
         [HttpGet("[action]")]
@@ -33,8 +37,16 @@ namespace FreshHub_BE.Controllers
         //    return Ok(await productRepository.Create(product));
         //}
 
-        [HttpGet("[action]/{Id}")]
+        [HttpPost("[action]")]
 
+        public async Task<ActionResult<Product>> Create([FromBody] ProductCreateModel model)
+        {
+            await validator.ValidateAndThrowAsync(model);
+            return 
+        }
+
+
+        [HttpGet("[action]/{Id}")]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllByCategory(int Id)
         {
             var categories = await categoryRepository.GetAll();
@@ -54,7 +66,6 @@ namespace FreshHub_BE.Controllers
                 return BadRequest("Product Id is not valid.");
             }
            return Ok(await productRepository.GetById(Id));
-
         }
     }
 }
