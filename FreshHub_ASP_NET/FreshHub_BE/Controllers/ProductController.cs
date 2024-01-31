@@ -3,15 +3,12 @@ using FreshHub_BE.Data.Entities;
 using FreshHub_BE.Models;
 using FreshHub_BE.Services.CategoryRepository;
 using FreshHub_BE.Services.ProductRepository;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FreshHub_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[AllowAnonymous]
     public class ProductController : ControllerBase
     {
         private readonly IProductRepository productRepository;
@@ -26,46 +23,92 @@ namespace FreshHub_BE.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ProductResultModel>>> GetAll()
         {
-            return Ok(await productRepository.GetAll());
+            return Ok((await productRepository.GetAll()).Select(p => new ProductResultModel
+            {
+                Id = p.Id,
+                ProductName = p.ProductName,
+                CategoryId = p.CategoryId,
+                Weight = p.Weight,
+                Price = p.Price,
+                Description = p.Description,
+                PhotoUrl = p.PhotoUrl,
+                CategoryName = p.Category.Name
+            }));
         }
-
-        //[HttpPost("[action]")]
-        //public async Task<ActionResult<Product>> Create([FromBody] Product product)
-        //{
-        //    return Ok(await productRepository.Create(product));
-        //}
 
         [HttpPost("[action]")]
 
-        public async Task<ActionResult<Product>> Create([FromBody] ProductCreateModel model)
+        public async Task<ActionResult<ProductResultModel>> Create([FromBody] ProductCreateModel model)
         {
             await validator.ValidateAndThrowAsync(model);
-            return 
+            Product product = new Product();
+            product.ProductName = model.ProductName;
+            product.CategoryId = model.CategoryId;
+            product.Weight = model.Weight;
+            product.Price = model.Price;
+            product.Description = model.Description;
+
+            product.PhotoUrl = "kjsnkdnvaskdnv"; 
+
+            var p = await productRepository.Create(product);
+            return Ok(new ProductResultModel
+            {
+                Id = p.Id,
+                ProductName = p.ProductName,
+                CategoryId = p.CategoryId,
+                Weight = p.Weight,
+                Price = p.Price,
+                Description = p.Description,
+                PhotoUrl = p.PhotoUrl,
+                CategoryName = p.Category.Name
+            });
         }
 
 
         [HttpGet("[action]/{Id}")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAllByCategory(int Id)
+        public async Task<ActionResult<IEnumerable<ProductResultModel>>> GetAllByCategory(int Id)
         {
             var categories = await categoryRepository.GetAll();
             if (!categories.Any(x => x.Id == Id))
             {
                 return BadRequest("iNVALID CATEGORY ID");
             }
-            return Ok(await productRepository.GetAllByCategory(Id));
+            return Ok((await productRepository.GetAllByCategory(Id)).Select(p => new ProductResultModel
+            {
+                Id = p.Id,
+                ProductName = p.ProductName,
+                CategoryId = p.CategoryId,
+                Weight = p.Weight,
+                Price = p.Price,
+                Description = p.Description,
+                PhotoUrl = p.PhotoUrl,
+                CategoryName = p.Category.Name
+            }));
         }
 
         [HttpGet("[action]/{Id}")]
 
-        public async Task<ActionResult<Product>> GetProductById(int Id)
+        public async Task<ActionResult<ProductResultModel>> GetProductById(int Id)
         {
             if (!await productRepository.IsProductIdExsist(Id))
             {
                 return BadRequest("Product Id is not valid.");
             }
-           return Ok(await productRepository.GetById(Id));
+            var p = await productRepository.GetById(Id);
+
+            return Ok(new ProductResultModel
+            {
+                Id = p.Id,
+                ProductName = p.ProductName,
+                CategoryId = p.CategoryId,
+                Weight = p.Weight,
+                Price = p.Price,
+                Description = p.Description,
+                PhotoUrl = p.PhotoUrl,
+                CategoryName = p.Category.Name
+            });
         }
     }
 }
