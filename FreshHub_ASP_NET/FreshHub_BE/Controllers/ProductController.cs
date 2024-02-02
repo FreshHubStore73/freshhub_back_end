@@ -3,7 +3,9 @@ using FreshHub_BE.Data.Entities;
 using FreshHub_BE.Models;
 using FreshHub_BE.Services.CategoryRepository;
 using FreshHub_BE.Services.ProductRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace FreshHub_BE.Controllers
@@ -48,9 +50,10 @@ namespace FreshHub_BE.Controllers
             }));
         }
 
+        [Authorize]
         [HttpPost("[action]")]
 
-        public async Task<ActionResult<ProductResultModel>> Create([FromForm] ProductCreateModel model, IFormFile ?image)
+        public async Task<ActionResult<ProductResultModel>> Create([FromHeader] string Authorization,[FromForm] ProductCreateModel model, IFormFile ?image)
         {
             await validator.ValidateAndThrowAsync(model);
             Product product = new Product();

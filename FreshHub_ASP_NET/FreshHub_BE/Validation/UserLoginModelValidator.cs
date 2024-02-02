@@ -12,8 +12,8 @@ namespace FreshHub_BE.Validation
                 .Length(12).WithErrorCode("Length.");
             RuleFor(u => u.Password)
                 .NotEmpty().WithErrorCode("Empty.")
-                .MinimumLength(4).WithErrorCode("Length.")
-                .MaximumLength(8).WithErrorCode("Length.");
+                .MinimumLength(8).WithErrorCode("Length.")
+                .MaximumLength(15).WithErrorCode("Length.");
         }
     }
 }

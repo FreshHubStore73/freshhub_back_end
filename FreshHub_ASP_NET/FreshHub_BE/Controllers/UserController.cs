@@ -28,44 +28,7 @@ namespace FreshHub_BE.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult> Register([FromBody] UserRegistrationModel user)
         {
-            await registrationValidator.ValidateAndThrowAsync(user);
-
-            user.Password = user.Password.Trim(' ');
-            if (user.Password.Length < 4 || user.Password.Length > 8) 
-            {
-                return Unauthorized("Bad password.");
-            }
-
-            user.PhoneNumber = user.PhoneNumber.Trim(' ');
-            if (user.PhoneNumber.Length != 12)
-            {
-                return Unauthorized("Bad nomber phone.");
-            }
-            if (await registrationService.IsExists(user))
-            {
-                return BadRequest("Phone is taken.");
-            }
-
-            user.FirstName = user.FirstName.Trim(' ');
-            if (user.FirstName.Length < 3 || user.FirstName.Length > 15)
-            {
-                return Unauthorized("Bad Firstname.");
-            }
-            if (await registrationService.IsExists(user))
-            {
-                return BadRequest("Firstname is taken.");
-            }
-
-            user.LastName = user.LastName.Trim(' ');
-            if (user.LastName.Length < 3 || user.LastName.Length > 15)
-            {
-                return Unauthorized("Bad Lastname.");
-            }
-            if (await registrationService.IsExists(user))
-            {
-                return BadRequest("Lastname is taken.");
-            }
-
+            await registrationValidator.ValidateAndThrowAsync(user);                      
 
             await registrationService.Registration(user);
 
