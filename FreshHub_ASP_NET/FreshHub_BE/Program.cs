@@ -55,11 +55,13 @@ builder.Services.AddControllers().AddJsonOptions(opt =>
 });
 
 var app = builder.Build();
+app.UseStaticFiles();
 app.UseExceptionMiddleware();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 
 app.MapControllers();

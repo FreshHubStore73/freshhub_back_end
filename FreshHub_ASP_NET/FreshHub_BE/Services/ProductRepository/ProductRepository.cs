@@ -16,7 +16,10 @@ namespace FreshHub_BE.Services.ProductRepository
         {
             appDbContext.Products.Add(product);
             await appDbContext.SaveChangesAsync();
-            return product;
+            return await appDbContext.Products
+                .Where(p => p.Id == product.Id)
+                .Include(p=>p.Category)
+                .FirstAsync();           
         }
 
         public async Task Delete(int productId)

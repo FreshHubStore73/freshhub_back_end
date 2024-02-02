@@ -4,6 +4,7 @@ using FreshHub_BE.Models;
 using FreshHub_BE.Services.CategoryRepository;
 using FreshHub_BE.Services.ProductRepository;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FreshHub_BE.Controllers
 {
@@ -11,15 +12,24 @@ namespace FreshHub_BE.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
+        private readonly string imagesPath;
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
         private readonly IValidator<ProductCreateModel> validator;
+        private readonly IWebHostEnvironment hostEnvironment;
 
-        public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository, IValidator<ProductCreateModel> validator)
+        public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository, IValidator<ProductCreateModel> validator, IWebHostEnvironment hostEnvironment)
         {
             this.productRepository = productRepository;
             this.categoryRepository = categoryRepository;
             this.validator = validator;
+            this.hostEnvironment = hostEnvironment;
+            imagesPath ="Images";
+        }
+
+        private string CreatePath(string image)
+        {
+            return string.IsNullOrEmpty(image) ? null : Path.Combine(imagesPath, image);
         }
 
         [HttpGet("[action]")]
@@ -33,14 +43,14 @@ namespace FreshHub_BE.Controllers
                 Weight = p.Weight,
                 Price = p.Price,
                 Description = p.Description,
-                PhotoUrl = p.PhotoUrl,
+                PhotoUrl =CreatePath(p.PhotoUrl),
                 CategoryName = p.Category.Name
             }));
         }
 
         [HttpPost("[action]")]
 
-        public async Task<ActionResult<ProductResultModel>> Create([FromBody] ProductCreateModel model)
+        public async Task<ActionResult<ProductResultModel>> Create([FromForm] ProductCreateModel model, IFormFile ?image)
         {
             await validator.ValidateAndThrowAsync(model);
             Product product = new Product();
@@ -50,7 +60,19 @@ namespace FreshHub_BE.Controllers
             product.Price = model.Price;
             product.Description = model.Description;
 
-            product.PhotoUrl = "kjsnkdnvaskdnv"; 
+            if (image != null)
+            {
+                product.PhotoUrl = image.FileName;
+                var path = Path.Combine(hostEnvironment.WebRootPath, "Images", image.FileName);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    image.CopyTo(stream); 
+                }
+            }
+            else 
+            {
+                product.PhotoUrl = "";
+            }
 
             var p = await productRepository.Create(product);
             return Ok(new ProductResultModel
@@ -61,7 +83,7 @@ namespace FreshHub_BE.Controllers
                 Weight = p.Weight,
                 Price = p.Price,
                 Description = p.Description,
-                PhotoUrl = p.PhotoUrl,
+                PhotoUrl = CreatePath(p.PhotoUrl),
                 CategoryName = p.Category.Name
             });
         }
@@ -83,7 +105,7 @@ namespace FreshHub_BE.Controllers
                 Weight = p.Weight,
                 Price = p.Price,
                 Description = p.Description,
-                PhotoUrl = p.PhotoUrl,
+                PhotoUrl = CreatePath(p.PhotoUrl),
                 CategoryName = p.Category.Name
             }));
         }
@@ -106,9 +128,13 @@ namespace FreshHub_BE.Controllers
                 Weight = p.Weight,
                 Price = p.Price,
                 Description = p.Description,
-                PhotoUrl = p.PhotoUrl,
+                PhotoUrl = CreatePath(p.PhotoUrl),
                 CategoryName = p.Category.Name
             });
         }
     }
 }
+
+
+
+
