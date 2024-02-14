@@ -29,12 +29,13 @@ namespace FreshHub_BE.Services.Registration
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
-                Email = " ", // spagetiCode
-                Password = hmac.ComputeHash(Encoding.UTF8.GetBytes(user.Password)),
-                Salt = hmac.Key
+                //Email = " ", // spagetiCode
+                //Password = hmac.ComputeHash(Encoding.UTF8.GetBytes(user.Password)),
+               // Salt = hmac.Key
             };
 
             dbContext.Users.Add(saveUser);
+            saveUser.Carts.Add(new Cart());
             await dbContext.SaveChangesAsync();
 
             return saveUser;
