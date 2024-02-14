@@ -3,10 +3,20 @@
     public class Order
     {
         public int Id { get; set; }
-        public int UserID { get; set; }
-        public DateTime OrderDate { get; set; }
-        public string DeliveryAddress { get; set; }
-        public int OrderStatusID { get; set; } // create table for order status ID
+        public int UserId { get; set; }
+        public string Recipient { get; set; }
+        public string PhoneNumber { get; set; }
+        public TimeOnly OrderTimeOnly { get; set; }
+        public DateOnly OrderDateOnly { get; set; }
+        public string Comment { get; set; }
+        public int NumberPerson { get; set; }
+        public bool Call { get; set; }
+        public string Payment { get; set; }
+        public int DeliveryAddressId { get; set; }
+        public int OrderStatusId { get; set; } = 1; 
         public bool PaymentStatus { get; set; }
+        public User User { get; set; }
+        public OrderStatus OrderStatus { get; set;}
+        public DeliveryAddress DeliveryAddress { get; set; }
     }
 }

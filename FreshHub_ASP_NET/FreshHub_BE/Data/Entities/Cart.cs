@@ -7,5 +7,6 @@
         public DateTime CreatedDate { get; set; }           
         public User User { get; set; }
         public List<CartItem> CartItems { get; set; } = new();
+
     }
 }
