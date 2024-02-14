@@ -3,6 +3,7 @@ using System;
 using FreshHub_BE.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreshHub_BE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240212075355_ChangeDataBaseModel")]
+    partial class ChangeDataBaseModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.15");
@@ -78,82 +81,29 @@ namespace FreshHub_BE.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("FreshHub_BE.Data.Entities.DeliveryAddress", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Flat")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Floor")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("StreetHouse")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DeliveryAddresses");
-                });
-
             modelBuilder.Entity("FreshHub_BE.Data.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("Call")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Comment")
+                    b.Property<string>("DeliveryAddress")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("DeliveryAddressId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("NumberPerson")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateOnly>("OrderDateOnly")
+                    b.Property<DateTime>("OrderDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("OrderStatusId")
+                    b.Property<int>("OrderStatusID")
                         .HasColumnType("INTEGER");
-
-                    b.Property<TimeOnly>("OrderTimeOnly")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Payment")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<bool>("PaymentStatus")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Recipient")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserID")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeliveryAddressId");
-
-                    b.HasIndex("OrderStatusId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Orders");
                 });
@@ -175,38 +125,6 @@ namespace FreshHub_BE.Migrations
                     b.HasKey("OrderId", "ProductId");
 
                     b.ToTable("OrderDatails");
-                });
-
-            modelBuilder.Entity("FreshHub_BE.Data.Entities.OrderStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OrderStatus");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "In progress"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Done"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Rejected"
-                        });
                 });
 
             modelBuilder.Entity("FreshHub_BE.Data.Entities.Product", b =>
@@ -471,33 +389,6 @@ namespace FreshHub_BE.Migrations
                     b.Navigation("Cart");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("FreshHub_BE.Data.Entities.Order", b =>
-                {
-                    b.HasOne("FreshHub_BE.Data.Entities.DeliveryAddress", "DeliveryAddress")
-                        .WithMany()
-                        .HasForeignKey("DeliveryAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FreshHub_BE.Data.Entities.OrderStatus", "OrderStatus")
-                        .WithMany()
-                        .HasForeignKey("OrderStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FreshHub_BE.Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DeliveryAddress");
-
-                    b.Navigation("OrderStatus");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FreshHub_BE.Data.Entities.Product", b =>
