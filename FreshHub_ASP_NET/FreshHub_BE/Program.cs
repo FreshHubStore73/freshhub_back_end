@@ -14,6 +14,9 @@ using System.Text;
 using FluentValidation;
 using System.Text.Json.Serialization;
 using FreshHub_BE.Models;
+using FreshHub_BE.Services.CartRepository;
+using FreshHub_BE.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -31,6 +34,19 @@ builder.Services.AddTransient<IRegistrationService, RegistrationService>();
 builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddValidatorsFromAssemblyContaining<UserLoginModel>();
+builder.Services.AddTransient<ICartRepository, CartRepository>();
+builder.Services.AddAuthorization(opt => 
+{
+    opt.AddPolicy("ModeratorRole", policy => policy.RequireRole("Moderator"));
+});
+
+builder.Services.AddIdentityCore<User>(opt =>
+{
+    opt.Password.RequireNonAlphanumeric = false;
+})
+    .AddRoles<Role>()
+    .AddRoleManager<RoleManager<Role>>()
+    .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
@@ -72,11 +88,11 @@ try
 
     var context = services.GetRequiredService<AppDbContext>();
     
-    if (!context.Categories.Any())
-    {
-        await context.Database.MigrateAsync();
+    
         await Seed.SeedCategory(context);
-    }
+        await Seed.SeedRole(services.GetRequiredService<RoleManager<Role>>());
+        await Seed.SeedUsers(services.GetRequiredService<UserManager<User>>());
+     
 }
 catch (Exception ex)
 {
