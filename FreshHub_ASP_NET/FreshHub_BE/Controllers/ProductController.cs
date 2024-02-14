@@ -50,7 +50,7 @@ namespace FreshHub_BE.Controllers
             }));
         }
 
-        [Authorize]
+        [Authorize(Policy = "ModeratorRole")]
         [HttpPost("[action]")]
 
         public async Task<ActionResult<ProductResultModel>> Create([FromHeader] string Authorization,[FromForm] ProductCreateModel model, IFormFile ?image)
