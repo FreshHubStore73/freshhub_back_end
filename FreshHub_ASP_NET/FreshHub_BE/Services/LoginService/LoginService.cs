@@ -25,12 +25,12 @@ namespace FreshHub_BE.Services.LoginService
 
         public UserModel Login(User user, UserLoginModel model)
         {
-            using var hmac = new HMACSHA512(user.Salt);
-            var password = hmac.ComputeHash(Encoding.UTF8.GetBytes(model.Password));
-
-            for (int i = 0; i < password.Length; i++)
+           // using var hmac = new HMACSHA512(user.Salt);
+            //var password = hmac.ComputeHash(Encoding.UTF8.GetBytes(model.Password));
+            
+            //for (int i = 0; i < password.Length; i++)
             {
-                if (password[i] != user.Password[i])
+                //if (password[i] != user.Password[i])
                 {
                     return default;
                 }
