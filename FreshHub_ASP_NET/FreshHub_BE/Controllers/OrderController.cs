@@ -12,7 +12,7 @@ namespace FreshHub_BE.Controllers
         [HttpPost("[Action]")]
 
 
-        public async Task<ActionResult<OrderResultModel>> Create (Order order)
+        public async Task<ActionResult<OrderResultModel>> Create (OrderModel order)
         {
             return Ok();
         }
