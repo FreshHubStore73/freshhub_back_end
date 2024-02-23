@@ -50,10 +50,10 @@ namespace FreshHub_BE.Controllers
             }));
         }
 
-        [Authorize(Policy = "ModeratorRole")]
+        [Authorize(/*Policy = "ModeratorRole"*/)]
         [HttpPost("[action]")]
 
-        public async Task<ActionResult<ProductResultModel>> Create([FromHeader] string Authorization,[FromForm] ProductCreateModel model, IFormFile ?image)
+        public async Task<ActionResult<ProductResultModel>> Create([FromForm] ProductCreateModel model, IFormFile ?image)
         {
             await validator.ValidateAndThrowAsync(model);
             Product product = new Product();
