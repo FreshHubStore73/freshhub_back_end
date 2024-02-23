@@ -1,6 +1,9 @@
+using FluentValidation;
 using FreshHub_BE.Data;
+using FreshHub_BE.Data.Entities;
 using FreshHub_BE.Extensions;
-using FreshHub_BE.Middleware;
+using FreshHub_BE.Models;
+using FreshHub_BE.Services.CartRepository;
 using FreshHub_BE.Services.CategoryRepository;
 using FreshHub_BE.Services.LoginService;
 using FreshHub_BE.Services.ProductRepository;
@@ -8,15 +11,12 @@ using FreshHub_BE.Services.Registration;
 using FreshHub_BE.Services.TokenService;
 using FreshHub_BE.Services.UserRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
-using FluentValidation;
 using System.Text.Json.Serialization;
-using FreshHub_BE.Models;
-using FreshHub_BE.Services.CartRepository;
-using FreshHub_BE.Data.Entities;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -28,14 +28,36 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(x =>
+{
+    var securitySchema = new OpenApiSecurityScheme
+    {
+        Name = "authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        }        
+    };
+    x.AddSecurityDefinition("Bearer", securitySchema);
+    x.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            securitySchema, new []{"Bearer"}
+        }
+    });
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<IRegistrationService, RegistrationService>();
 builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddValidatorsFromAssemblyContaining<UserLoginModel>();
 builder.Services.AddTransient<ICartRepository, CartRepository>();
-builder.Services.AddAuthorization(opt => 
+builder.Services.AddAuthorization(opt =>
 {
     opt.AddPolicy("ModeratorRole", policy => policy.RequireRole("Moderator"));
 });
@@ -64,7 +86,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 
 
-builder.Services.AddControllers().AddJsonOptions(opt => 
+builder.Services.AddControllers().AddJsonOptions(opt =>
 {
     opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     opt.JsonSerializerOptions.WriteIndented = true;
@@ -87,12 +109,12 @@ try
 {
 
     var context = services.GetRequiredService<AppDbContext>();
-    
-    
-        await Seed.SeedCategory(context);
-        await Seed.SeedRole(services.GetRequiredService<RoleManager<Role>>());
-        await Seed.SeedUsers(services.GetRequiredService<UserManager<User>>());
-     
+
+
+    await Seed.SeedCategory(context);
+    await Seed.SeedRole(services.GetRequiredService<RoleManager<Role>>());
+    await Seed.SeedUsers(services.GetRequiredService<UserManager<User>>());
+
 }
 catch (Exception ex)
 {

@@ -7,9 +7,9 @@ namespace FreshHub_BE.Services.OrderService
     public interface IOrderService
     {
         public Task<OrderResultModel> Create(OrderModel orderModel, int userId);
-        public Task<OrderResultModel> Update(OrderModel orderModel);
-        public Task<OrderResultModel> Rejected(int Id);
-        public Task<OrderResultModel> Status(int Id, PaymentEnum status);
+        public Task Update(OrderModel orderModel, int userId);
+        public Task Rejected(int Id);
+        public Task Status(int Id, PaymentEnum status);
         public Task<List<Order>> GetAll();
         public Task<List<Order>> GetAllByUser(int userId);
         public Task<OrderResultModel> GetOrderInfo(int orderId);

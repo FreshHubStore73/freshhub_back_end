@@ -2,6 +2,7 @@
 using FreshHub_BE.Data.Entities;
 using FreshHub_BE.Enums;
 using FreshHub_BE.Models;
+using System;
 using Microsoft.EntityFrameworkCore;
 
 namespace FreshHub_BE.Services.OrderService
@@ -53,13 +54,18 @@ namespace FreshHub_BE.Services.OrderService
             await dbContext.Orders.AddAsync(order);
             await dbContext.SaveChangesAsync();
 
-            return new OrderResultModel {Id = order.Id, Summ = order.OrderDatails.Sum(x=>x.Quantity *x.Price)};
+            //var cart = await dbContext.Carts.FirstOrDefaultAsync(x => x.UserId == userId);
+
+            cart.CartItems.RemoveRange(0, cart.CartItems.Count);
+            await dbContext.SaveChangesAsync();
+
+            return new OrderResultModel { Id = order.Id, Summ = order.OrderDatails.Sum(x => x.Quantity * x.Price) };
         }
 
         public async Task<List<Order>> GetAll()
         {
             return await dbContext.Orders
-                .Include(o => o.OrderStatus)                
+                .Include(o => o.OrderStatus)
                 .Include(o => o.DeliveryAddress)
                 .Include(o => o.OrderDatails)
                     .ThenInclude(o => o.Product)
@@ -74,41 +80,48 @@ namespace FreshHub_BE.Services.OrderService
             return await dbContext.Orders
                 .Include(o => o.OrderStatus)
                 .Include(o => o.OrderDatails)
-                    .ThenInclude(o => o.Product)    
+                    .ThenInclude(o => o.Product)
                         .ThenInclude(o => o.Category)
                 .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<Order> GetOrderInfo(int orderId)
+        public async Task<OrderResultModel> GetOrderInfo(int orderId)
         {
-            return await dbContext.Orders
+            var order = await dbContext.Orders
                 .Include(o => o.OrderStatus)
                 .Include(o => o.OrderDatails)
                     .ThenInclude(o => o.Product)
                         .ThenInclude(o => o.Category)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.Id == orderId);
+            return new OrderResultModel
+            {
+                Id = orderId,
+                Summ = order.OrderDatails.Sum(x => x.Product.Price * x.Quantity)
+            };
         }
 
-        public async Task<Order> Rejected(int Id)
+        public async Task Rejected(int Id)
         {
             var order = await dbContext.Orders
                 .Include(o => o.OrderStatus)
                 .FirstOrDefaultAsync(o => o.Id == Id);
             if (order == null)
             {
-                return null;
+                throw new System.Exception("Order not excist.");
             }
 
             order.OrderStatus = dbContext.OrderStatus.First(o => o.Id == 3);
 
-            return order;
+           
         }
 
-        public Task<OrderResultModel> Status(int Id, PaymentEnum status)
+        public async Task Status(int Id, PaymentEnum status)
         {
-            throw new NotImplementedException();
+            var result = await dbContext.Orders.FirstOrDefaultAsync(x => x.Id == Id);
+            result.PaymentStatus = status == PaymentEnum.Cash;
+            await dbContext.SaveChangesAsync();
         }
 
         public async Task Update(OrderModel orderModel, int userId)
@@ -122,7 +135,7 @@ namespace FreshHub_BE.Services.OrderService
             order.DeliveryAddress.StreetHouse = orderModel.StreetHouse;
             order.DeliveryAddress.Flat = orderModel.Flat;
             order.DeliveryAddress.Floor = orderModel.Floor;
-           
+
             order.NumberPerson = orderModel.NumberPerson;
             order.OrderDateOnly = orderModel.OrderDateOnly;
             order.OrderStatusId = 1;
@@ -135,6 +148,5 @@ namespace FreshHub_BE.Services.OrderService
             await dbContext.SaveChangesAsync();
         }
 
-        
     }
 }
