@@ -47,7 +47,7 @@ namespace FreshHub_BE.Data
               FirstName = "Admin",
               LastName = "Admin",
               PhoneNumber = "123456789012",
-              UserName = "Admin"
+              UserName = "123456789012"
             };
             var resUser = await userManager.CreateAsync(admin, "Pa$$w0rd");
             var resRole = await userManager.AddToRolesAsync(admin, new[] { "Admin","Moderator",});
