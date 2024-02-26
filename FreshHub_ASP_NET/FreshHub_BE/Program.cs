@@ -6,6 +6,7 @@ using FreshHub_BE.Models;
 using FreshHub_BE.Services.CartRepository;
 using FreshHub_BE.Services.CategoryRepository;
 using FreshHub_BE.Services.LoginService;
+using FreshHub_BE.Services.OrderService;
 using FreshHub_BE.Services.ProductRepository;
 using FreshHub_BE.Services.Registration;
 using FreshHub_BE.Services.TokenService;
@@ -57,6 +58,7 @@ builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddValidatorsFromAssemblyContaining<UserLoginModel>();
 builder.Services.AddTransient<ICartRepository, CartRepository>();
+builder.Services.AddTransient<IOrderService, OrderService>();
 builder.Services.AddAuthorization(opt =>
 {
     opt.AddPolicy("ModeratorRole", policy => policy.RequireRole("Moderator"));

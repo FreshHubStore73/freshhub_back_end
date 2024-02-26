@@ -59,7 +59,7 @@ namespace FreshHub_BE.Services.OrderService
             cart.CartItems.RemoveRange(0, cart.CartItems.Count);
             await dbContext.SaveChangesAsync();
 
-            return new OrderResultModel { Id = order.Id, Summ = order.OrderDatails.Sum(x => x.Quantity * x.Price) };
+            return new OrderResultModel { Id = order.Id, Summ = order.OrderDatails.Sum(x => x.Price) };
         }
 
         public async Task<List<Order>> GetAll()

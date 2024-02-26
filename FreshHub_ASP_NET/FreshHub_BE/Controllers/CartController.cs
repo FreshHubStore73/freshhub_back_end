@@ -17,14 +17,14 @@ namespace FreshHub_BE.Controllers
         }
 
 
-        [HttpGet("[action]")]
+        [HttpGet]
         public async Task<ActionResult> GetCart()
         {
             int userId = User.GetUserId();
             return Ok(await cartRepository.GetCart(userId));
         }
 
-        [HttpPost("[action]")]
+        [HttpPost]
 
         public async Task<ActionResult> AddItem([FromBody] CartItemModel cartItemModel)
         {
@@ -40,7 +40,7 @@ namespace FreshHub_BE.Controllers
             return Ok(cartItem);
         }
 
-        [HttpDelete("[action]/{id}")]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             int userId = User.GetUserId();
@@ -56,7 +56,7 @@ namespace FreshHub_BE.Controllers
             return Ok();
         }
 
-        [HttpPut("[action]/{cartItemId}")]
+        [HttpPut("{cartItemId}")]
         public async Task<ActionResult> Update(int cartItemId, [FromBody] CartItemModel cartItemModel)
         {
             int userId = User.GetUserId();
