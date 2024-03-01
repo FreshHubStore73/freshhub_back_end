@@ -1,4 +1,5 @@
 ﻿using FreshHub_BE.Data.Entities;
+using FreshHub_BE.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FreshHub_BE.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
@@ -19,22 +21,22 @@ namespace FreshHub_BE.Controllers
         }
 
 
-        [Authorize/*(Policy = "ModeratorRole")*/]
+        [Authorize(Policy = "ModeratorRole")]
         [HttpGet("[action]")]
         public async Task<ActionResult> GetUsersWithRole()
         {
-            var users = await userManager.Users.OrderBy(u => u.Id).Select(u => new
+            var users = await userManager.Users.OrderBy(u => u.Id).Select(u => new UserWithRoleModels
             {
-                u.Id,
-                u.FirstName,
-                u.LastName,
-                Roles =(userManager.GetRolesAsync(u).Result)
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Roles =(userManager.GetRolesAsync(u).Result).ToArray()
             }).ToListAsync();
 
             return Ok(users);
         }
 
-        [Authorize/*(Policy = "ModeratorRole")*/]
+        [Authorize(Policy = "ModeratorRole")]
         [HttpPost("[action]/{userId}")]
 
         public async Task<ActionResult> ChangeRole(int userId, [FromQuery] string roles)

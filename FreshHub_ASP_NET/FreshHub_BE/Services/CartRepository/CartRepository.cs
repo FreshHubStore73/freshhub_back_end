@@ -13,12 +13,11 @@ namespace FreshHub_BE.Services.CartRepository
         {
             this.context = context;
         }
-        public async Task<CartItemResultModel> AddItem(int userId, CartItem item)
+        public async Task<CartItem> AddItem(int userId, CartItem item)
         {
             var user = await context.Users
                  .Include(x => x.Carts)
-                 .ThenInclude(x => x.CartItems)
-                 //.ThenInclude(x => x.Product)
+                 .ThenInclude(x => x.CartItems)                 
                  .FirstAsync(x => x.Id == userId);
 
             var cart = user.Carts.FirstOrDefault();
@@ -30,18 +29,11 @@ namespace FreshHub_BE.Services.CartRepository
             user.Carts.First().CartItems.Add(item);
 
             await context.SaveChangesAsync();
-
-            return new CartItemResultModel
-            {
-                Id = item.Id,
-                Product = (await context.Products
+            item.Product = (await context.Products
                      .Include(x => x.Category)
                      .AsNoTracking()
-                     .FirstOrDefaultAsync())!,
-                Price = item.Price,
-                ProductId = item.ProductId,
-                Quantity = item.Quantity
-            };
+                     .FirstAsync());
+            return item;
         }
 
         public async Task<bool> DeleteItem(CartItem item, int userId)
@@ -64,6 +56,11 @@ namespace FreshHub_BE.Services.CartRepository
         {
             if (await context.Users.AnyAsync(x => x.Id == Id))
             {
+                if (!(await context.Carts.AnyAsync(x => x.UserId == Id)))
+                {
+                    await context.Carts.AddAsync(new Cart { UserId = Id });
+                    await context.SaveChangesAsync();
+                }
                 return await context.Carts
                     .Include(x => x.CartItems)
                     .ThenInclude(x => x.Product)

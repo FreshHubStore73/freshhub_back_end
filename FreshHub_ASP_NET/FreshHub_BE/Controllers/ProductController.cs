@@ -10,6 +10,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace FreshHub_BE.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -50,7 +51,7 @@ namespace FreshHub_BE.Controllers
             }));
         }
 
-        [Authorize(/*Policy = "ModeratorRole"*/)]
+        [Authorize(Policy = "ModeratorRole")]
         [HttpPost("[action]")]
 
         public async Task<ActionResult<ProductResultModel>> Create([FromForm] ProductCreateModel model, IFormFile ?image)

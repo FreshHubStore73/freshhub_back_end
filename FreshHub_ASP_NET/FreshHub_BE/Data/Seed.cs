@@ -13,7 +13,7 @@ namespace FreshHub_BE.Data
                 return;
             }
 
-            appDbContext.Categories.AddRange(new Category { Name = "Burgers" }, new Category {Name = "Pizza" }, new Category { Name = "Salads" }, new Category { Name = "Desserts" });
+            appDbContext.Categories.AddRange(new Category { Name = "Burgers", Priority = 2 }, new Category {Name = "Pizza", Priority = 1 }, new Category { Name = "Salads", Priority = 3 }, new Category { Name = "Desserts", Priority = 4 });
             await appDbContext.SaveChangesAsync();
         }
         public static async Task SeedRole(RoleManager<Role> roleManager)
@@ -36,8 +36,7 @@ namespace FreshHub_BE.Data
         }
 
         public static async Task SeedUsers(UserManager<User> userManager)
-        {
-            var users = userManager.Users.ToList();
+        {            
             if (await userManager.Users.AnyAsync())
             {
                 return;
@@ -51,6 +50,16 @@ namespace FreshHub_BE.Data
             };
             var resUser = await userManager.CreateAsync(admin, "Pa$$w0rd");
             var resRole = await userManager.AddToRolesAsync(admin, new[] { "Admin","Moderator",});
+
+            var user = new User() 
+            {
+                FirstName = "User",
+                LastName = "User",
+                PhoneNumber = "111111111111",
+                UserName = "111111111111"
+            };
+            await userManager.CreateAsync(user, "Pa$$w0rd");
+            await userManager.AddToRoleAsync(user, "User");
         }
 
 

@@ -22,7 +22,14 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    //if (builder.Environment.IsProduction())
+    {
+        opt.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),new MySqlServerVersion(new Version(8, 0)));
+    }
+   // else
+    {
+    //    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("FreshHub_BE"));
+    }
 
 });
 
@@ -59,9 +66,11 @@ builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddValidatorsFromAssemblyContaining<UserLoginModel>();
 builder.Services.AddTransient<ICartRepository, CartRepository>();
 builder.Services.AddTransient<IOrderService, OrderService>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddAuthorization(opt =>
 {
     opt.AddPolicy("ModeratorRole", policy => policy.RequireRole("Moderator"));
+    opt.AddPolicy("ModeratorRole", policy => policy.RequireRole("Admin"));
 });
 
 builder.Services.AddIdentityCore<User>(opt =>
@@ -111,8 +120,8 @@ try
 {
 
     var context = services.GetRequiredService<AppDbContext>();
-
-
+    // context.Database.EnsureDeleted();
+    context.Database.Migrate();
     await Seed.SeedCategory(context);
     await Seed.SeedRole(services.GetRequiredService<RoleManager<Role>>());
     await Seed.SeedUsers(services.GetRequiredService<UserManager<User>>());

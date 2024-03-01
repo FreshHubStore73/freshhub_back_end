@@ -6,8 +6,9 @@
         public int UserId { get; set; }
         public string Recipient { get; set; }
         public string PhoneNumber { get; set; }
-        public TimeOnly? OrderTimeOnly { get; set; }
-        public DateOnly? OrderDateOnly { get; set; }
+        //public TimeOnly? OrderTimeOnly { get; set; }
+        //public DateOnly? OrderDateOnly { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public string Comment { get; set; }
         public int NumberPerson { get; set; }
         public bool Call { get; set; }

@@ -4,8 +4,9 @@ namespace FreshHub_BE.Models
 {
     public class OrderModel
     {       
-        public TimeOnly? OrderTimeOnly { get; set; }
-        public DateOnly? OrderDateOnly { get; set; }
+        //public TimeOnly? OrderTimeOnly { get; set; }
+        //public DateOnly? OrderDateOnly { get; set; }
+        public DateTime? CreateDate { get; set; }
         public string Recipient { get; set; }
         public string PhoneNumber { get; set; }
         public string Comment { get; set; }

@@ -29,9 +29,8 @@ namespace FreshHub_BE.Services.OrderService
                     Floor = orderModel.Floor
                 },
                 NumberPerson = orderModel.NumberPerson,
-                OrderDateOnly = orderModel.OrderDateOnly,
-                OrderStatusId = 1,
-                OrderTimeOnly = orderModel.OrderTimeOnly,
+                CreatedDate = orderModel.CreateDate,
+                OrderStatusId = 1,               
                 Payment = orderModel.Payment,
                 PaymentStatus = orderModel.PaymentStatus,
                 PhoneNumber = orderModel.PhoneNumber,
@@ -137,9 +136,8 @@ namespace FreshHub_BE.Services.OrderService
             order.DeliveryAddress.Floor = orderModel.Floor;
 
             order.NumberPerson = orderModel.NumberPerson;
-            order.OrderDateOnly = orderModel.OrderDateOnly;
-            order.OrderStatusId = 1;
-            order.OrderTimeOnly = orderModel.OrderTimeOnly;
+            order.CreatedDate = orderModel.CreateDate;
+            order.OrderStatusId = 1;            
             order.Payment = orderModel.Payment;
             order.PaymentStatus = orderModel.PaymentStatus;
             order.PhoneNumber = orderModel.PhoneNumber;
