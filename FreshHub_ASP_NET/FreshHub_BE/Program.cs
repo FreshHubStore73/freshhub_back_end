@@ -125,6 +125,7 @@ try
     await Seed.SeedCategory(context);
     await Seed.SeedRole(services.GetRequiredService<RoleManager<Role>>());
     await Seed.SeedUsers(services.GetRequiredService<UserManager<User>>());
+    await Seed.SeedOrderStatus(context);
 
 }
 catch (Exception ex)

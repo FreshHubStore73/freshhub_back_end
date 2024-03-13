@@ -95,7 +95,8 @@ namespace FreshHub_BE.Controllers
         [HttpGet("[action]")]
         public async Task<ActionResult<User>> GetInfoAboutUser()
         {
-            int id = int.Parse(HttpContext.User.FindFirst(JwtRegisteredClaimNames.NameId)!.Value);
+            var id_ = HttpContext.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            int id = int.Parse(id_!.Value);
 
             return await userRepository.GetById(id);
         }

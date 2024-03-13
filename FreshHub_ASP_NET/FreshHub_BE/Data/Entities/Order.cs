@@ -9,6 +9,7 @@
         //public TimeOnly? OrderTimeOnly { get; set; }
         //public DateOnly? OrderDateOnly { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public DateTime? DeliveryTime { get; set; }
         public string Comment { get; set; }
         public int NumberPerson { get; set; }
         public bool Call { get; set; }
