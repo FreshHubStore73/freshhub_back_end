@@ -1,5 +1,8 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using FluentValidation;
 using FreshHub_BE.Data.Entities;
+using FreshHub_BE.Helpers;
 using FreshHub_BE.Models;
 using FreshHub_BE.Services.CategoryRepository;
 using FreshHub_BE.Services.ProductRepository;
@@ -15,40 +18,28 @@ namespace FreshHub_BE.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly string imagesPath;
+        
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
         private readonly IValidator<ProductCreateModel> validator;
         private readonly IWebHostEnvironment hostEnvironment;
+        private readonly IMapper mapper;
 
-        public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository, IValidator<ProductCreateModel> validator, IWebHostEnvironment hostEnvironment)
+        public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository, IValidator<ProductCreateModel> validator, IWebHostEnvironment hostEnvironment, IMapper mapper)
         {
             this.productRepository = productRepository;
             this.categoryRepository = categoryRepository;
             this.validator = validator;
             this.hostEnvironment = hostEnvironment;
-            imagesPath ="Images";
+            this.mapper = mapper;
         }
 
-        private string CreatePath(string image)
-        {
-            return string.IsNullOrEmpty(image) ? null : Path.Combine(imagesPath, image);
-        }
+        
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<IEnumerable<ProductResultModel>>> GetAll()
+        public  ActionResult<IEnumerable<ProductResultModel>> GetAll()
         {
-            return Ok((await productRepository.GetAll()).Select(p => new ProductResultModel
-            {
-                Id = p.Id,
-                ProductName = p.ProductName,
-                CategoryId = p.CategoryId,
-                Weight = p.Weight,
-                Price = p.Price,
-                Description = p.Description,
-                PhotoUrl =CreatePath(p.PhotoUrl),
-                CategoryName = p.Category.Name
-            }));
+            return Ok( productRepository.GetAll().ProjectTo<ProductResultModel>(mapper.ConfigurationProvider));
         }
 
         [Authorize(Policy = "ModeratorRole")]
@@ -57,12 +48,7 @@ namespace FreshHub_BE.Controllers
         public async Task<ActionResult<ProductResultModel>> Create([FromForm] ProductCreateModel model, IFormFile ?image)
         {
             await validator.ValidateAndThrowAsync(model);
-            Product product = new Product();
-            product.ProductName = model.ProductName;
-            product.CategoryId = model.CategoryId;
-            product.Weight = model.Weight;
-            product.Price = model.Price;
-            product.Description = model.Description;
+            var product = mapper.Map<Product>(model);            
 
             if (image != null)
             {
@@ -79,17 +65,7 @@ namespace FreshHub_BE.Controllers
             }
 
             var p = await productRepository.Create(product);
-            return Ok(new ProductResultModel
-            {
-                Id = p.Id,
-                ProductName = p.ProductName,
-                CategoryId = p.CategoryId,
-                Weight = p.Weight,
-                Price = p.Price,
-                Description = p.Description,
-                PhotoUrl = CreatePath(p.PhotoUrl),
-                CategoryName = p.Category.Name
-            });
+            return Ok(mapper.Map<ProductResultModel>(p));
         }
 
 
@@ -101,17 +77,7 @@ namespace FreshHub_BE.Controllers
             {
                 return BadRequest("iNVALID CATEGORY ID");
             }
-            return Ok((await productRepository.GetAllByCategory(Id)).Select(p => new ProductResultModel
-            {
-                Id = p.Id,
-                ProductName = p.ProductName,
-                CategoryId = p.CategoryId,
-                Weight = p.Weight,
-                Price = p.Price,
-                Description = p.Description,
-                PhotoUrl = CreatePath(p.PhotoUrl),
-                CategoryName = p.Category.Name
-            }));
+            return Ok(( productRepository.GetAllByCategory(Id)).ProjectTo<ProductResultModel>(mapper.ConfigurationProvider));
         }
 
         [HttpGet("[action]/{Id}")]
@@ -124,17 +90,7 @@ namespace FreshHub_BE.Controllers
             }
             var p = await productRepository.GetById(Id);
 
-            return Ok(new ProductResultModel
-            {
-                Id = p.Id,
-                ProductName = p.ProductName,
-                CategoryId = p.CategoryId,
-                Weight = p.Weight,
-                Price = p.Price,
-                Description = p.Description,
-                PhotoUrl = CreatePath(p.PhotoUrl),
-                CategoryName = p.Category.Name
-            });
+            return Ok(mapper.Map<ProductResultModel>(p));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FreshHub_BE.Data.Entities;
 using FreshHub_BE.Enums;
 using FreshHub_BE.Extensions;
 using FreshHub_BE.Models;
@@ -33,11 +34,18 @@ namespace FreshHub_BE.Controllers
 
         [HttpGet("[Action]")]
 
-        public async Task<ActionResult> GetAll()
+        public async Task<ActionResult> GetAll() // for admin (add policy)
         {
             int userId = User.GetUserId();
 
             var result = await orderService.GetAll();
+            return Ok(result);
+        }
+
+        public async Task<ActionResult<OrderResultModel>> CreateWithOutCart([FromBody] OrderWithOutCartModel orderWithOutCart)
+        {
+            int userId = User.GetUserId();
+            var result = await orderService.CreateWithOutCart(orderWithOutCart, userId);
             return Ok(result);
         }
 

@@ -33,6 +33,13 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 });
 
+builder.Services.Configure<IdentityOptions>(opt => { 
+        opt.Password.RequireDigit = false;
+        opt.Password.RequireUppercase = false;
+        opt.Password.RequireNonAlphanumeric = false;
+    
+    });
+
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();

@@ -61,7 +61,48 @@ namespace FreshHub_BE.Services.OrderService
             return new OrderResultModel { Id = order.Id, Summ = order.OrderDatails.Sum(x => x.Price) };
         }
 
-        public async Task<List<Order>> GetAll()
+        public async Task<OrderResultModel> CreateWithOutCart(OrderWithOutCartModel orderWithOutCartModel, int userId)
+        {
+            Order order = new Order
+            {
+                CashSum = orderWithOutCartModel.CashSum,
+                Call = orderWithOutCartModel.Call,
+                Comment = orderWithOutCartModel.Comment,
+                DeliveryAddress = new DeliveryAddress
+                {
+                    StreetHouse = orderWithOutCartModel.StreetHouse,
+                    Flat = orderWithOutCartModel.Flat,
+                    Floor = orderWithOutCartModel.Floor
+                },
+                NumberPerson = orderWithOutCartModel.NumberPerson,
+                CreatedDate = orderWithOutCartModel.CreateDate,
+                OrderStatusId = 1,
+                Payment = orderWithOutCartModel.Payment,
+                PaymentStatus = orderWithOutCartModel.PaymentStatus,
+                PhoneNumber = orderWithOutCartModel.PhoneNumber,
+                Recipient = orderWithOutCartModel.Recipient,
+                UserId = userId
+            };
+
+            order.OrderDatails = orderWithOutCartModel.Items.Select(ci => new OrderDatail
+            {
+                Order = order,
+                Quantity = ci.Quantity,
+                ProductId = ci.ProductId,
+                Price = ci.Price
+            }).ToList();
+
+            await dbContext.Orders.AddAsync(order);
+            await dbContext.SaveChangesAsync();
+
+            return new OrderResultModel
+            {
+                Id = order.Id,
+                Summ = order.OrderDatails.Sum(x => x.Price)
+            };
+        }
+
+        public async Task<List<Order>> GetAll() // for admin
         {
             return await dbContext.Orders
                 .Include(o => o.OrderStatus)

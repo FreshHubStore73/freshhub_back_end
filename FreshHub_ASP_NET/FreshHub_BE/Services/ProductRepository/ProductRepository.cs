@@ -28,15 +28,15 @@ namespace FreshHub_BE.Services.ProductRepository
             await appDbContext.SaveChangesAsync();
         }
 
-        public async Task <List<Product>> GetAll()
+        public IQueryable<Product> GetAll()
         {
             
-            return await appDbContext.Products.Include(x=>x.Category).ToListAsync();
+            return  appDbContext.Products.Include(x=>x.Category);
         }
 
-        public async Task <List<Product>> GetAllByCategory(int categoryId)
+        public IQueryable <Product> GetAllByCategory(int categoryId)
         {
-           return await appDbContext.Products.Include(x=>x.Category).Where(x => x.CategoryId == categoryId).ToListAsync();
+           return  appDbContext.Products.Include(x=>x.Category).Where(x => x.CategoryId == categoryId);
         }
 
         public async Task <Product?> GetById(int productId)

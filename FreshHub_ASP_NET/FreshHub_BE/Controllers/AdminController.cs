@@ -1,4 +1,6 @@
-﻿using FreshHub_BE.Data.Entities;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using FreshHub_BE.Data.Entities;
 using FreshHub_BE.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,10 +16,12 @@ namespace FreshHub_BE.Controllers
     public class AdminController : ControllerBase
     {
         private readonly Microsoft.AspNetCore.Identity.UserManager<User> userManager;
+        private readonly IMapper mapper;
 
-        public AdminController(UserManager<User> userManager)
+        public AdminController(UserManager<User> userManager, IMapper mapper)
         {
             this.userManager = userManager;
+            this.mapper = mapper;
         }
 
 
@@ -25,13 +29,12 @@ namespace FreshHub_BE.Controllers
         [HttpGet("[action]")]
         public async Task<ActionResult> GetUsersWithRole()
         {
-            var users = await userManager.Users.OrderBy(u => u.Id).Select(u => new UserWithRoleModels
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Roles =(userManager.GetRolesAsync(u).Result).ToArray()
-            }).ToListAsync();
+            var users = await userManager.Users.Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .OrderBy(u => u.Id)
+                .ProjectTo<UserWithRoleModels>(mapper.ConfigurationProvider)
+                //.Select(u => mapper.Map<UserWithRoleModels>(u))
+                .ToListAsync();
 
             return Ok(users);
         }

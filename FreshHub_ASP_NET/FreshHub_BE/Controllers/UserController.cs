@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using FreshHub_BE.Data.Entities;
 using FreshHub_BE.Models;
 using FreshHub_BE.Services.TokenService;
@@ -21,18 +22,21 @@ namespace FreshHub_BE.Controllers
         private readonly UserManager<User> userManager;
         private readonly ITokenService tokenService;
         private readonly RoleManager<Role> roleManager;
+        private readonly IMapper mapper;
         private readonly IUserRepository userRepository;
 
         public UserController(IValidator<UserLoginModel> loginValidator,            IValidator<UserRegistrationModel> registrationValidator,
                               UserManager<User> userManager, ITokenService tokenService,
                               IUserRepository userRepository,
-                              RoleManager<Role> roleManager)
+                              RoleManager<Role> roleManager,
+                              IMapper mapper)
         {            
             this.loginValidator = loginValidator;
             this.registrationValidator = registrationValidator;
             this.userManager = userManager;
             this.tokenService = tokenService;
             this.roleManager = roleManager;
+            this.mapper = mapper;
             this.userRepository = userRepository;
         }
 
@@ -40,15 +44,8 @@ namespace FreshHub_BE.Controllers
         public async Task<ActionResult> Register([FromBody] UserRegistrationModel user)
         {
             await registrationValidator.ValidateAndThrowAsync(user);
-            var dataBaseUser = new User
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                UserName = user.PhoneNumber,
-               // Email = "",
-                //Password = Encoding.UTF8.GetBytes(user.Password)
-            };
+            var dataBaseUser = mapper.Map<User>(user);
+
             var roles = roleManager.Roles.ToList();
             var result = await userManager.CreateAsync(dataBaseUser, user.Password);
             if (!result.Succeeded)
