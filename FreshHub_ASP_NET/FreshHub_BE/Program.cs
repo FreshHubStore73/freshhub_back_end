@@ -14,6 +14,7 @@ using FreshHub_BE.Services.UserRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -140,3 +141,5 @@ catch (Exception ex)
     Console.WriteLine(ex);
 }
 app.Run();
+
+public partial class Program { };
