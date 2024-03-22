@@ -18,8 +18,8 @@ namespace FreshHub_BE.Services.ProductRepository
             await appDbContext.SaveChangesAsync();
             return await appDbContext.Products
                 .Where(p => p.Id == product.Id)
-                .Include(p=>p.Category)
-                .FirstAsync();           
+                .Include(p => p.Category)
+                .FirstAsync();
         }
 
         public async Task Delete(int productId)
@@ -30,29 +30,34 @@ namespace FreshHub_BE.Services.ProductRepository
 
         public IQueryable<Product> GetAll()
         {
-            
-            return  appDbContext.Products.Include(x=>x.Category);
+
+            return appDbContext.Products.Include(x => x.Category);
         }
 
-        public IQueryable <Product> GetAllByCategory(int categoryId)
+        public IQueryable<Product> GetAllByCategory(int categoryId)
         {
-           return  appDbContext.Products.Include(x=>x.Category).Where(x => x.CategoryId == categoryId);
+            return appDbContext.Products.Include(x => x.Category).Where(x => x.CategoryId == categoryId);
         }
 
-        public async Task <Product?> GetById(int productId)
+        public async Task<Product?> GetById(int productId)
         {
-            return await appDbContext.Products.Include(x=>x.Category).FirstOrDefaultAsync(x=>x.Id == productId);
+            return await appDbContext.Products.Include(x => x.Category).FirstOrDefaultAsync(x => x.Id == productId);
         }
 
         public async Task Update(Product product)
         {
-           appDbContext.Entry(product).State = EntityState.Modified;
-           await appDbContext.SaveChangesAsync();
+            if (string.IsNullOrEmpty(product.PhotoUrl))
+            {
+                product.PhotoUrl = appDbContext.Products.First(x => x.Id == product.Id).PhotoUrl;
+            }
+            appDbContext.Entry(product).State = EntityState.Modified;
+            await appDbContext.SaveChangesAsync();
+
         }
 
         public async Task<bool> IsProductIdExsist(int Id)
-        { 
-            return await appDbContext.Products.AnyAsync(x=>x.Id == Id);
+        {
+            return await appDbContext.Products.AnyAsync(x => x.Id == Id);
         }
 
     }

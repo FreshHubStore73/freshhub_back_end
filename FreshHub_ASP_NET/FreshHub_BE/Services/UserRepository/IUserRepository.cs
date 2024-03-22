@@ -9,5 +9,6 @@ namespace FreshHub_BE.Services.UserRepository
         public Task Update(User user);
         public Task<List<User>> GetAll();        
         public Task<User> GetById(int userId);
+        public Task<bool> CheckPhoneNumber(string phoneNumber);
     }
 }

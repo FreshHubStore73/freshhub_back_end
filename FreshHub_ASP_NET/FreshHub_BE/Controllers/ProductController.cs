@@ -18,7 +18,7 @@ namespace FreshHub_BE.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        
+
         private readonly IProductRepository productRepository;
         private readonly ICategoryRepository categoryRepository;
         private readonly IValidator<ProductCreateModel> validator;
@@ -34,21 +34,21 @@ namespace FreshHub_BE.Controllers
             this.mapper = mapper;
         }
 
-        
+
 
         [HttpGet("[action]")]
-        public  ActionResult<IEnumerable<ProductResultModel>> GetAll()
+        public ActionResult<IEnumerable<ProductResultModel>> GetAll()
         {
-            return Ok( productRepository.GetAll().ProjectTo<ProductResultModel>(mapper.ConfigurationProvider));
+            return Ok(productRepository.GetAll().ProjectTo<ProductResultModel>(mapper.ConfigurationProvider));
         }
 
         [Authorize(Policy = "ModeratorRole")]
         [HttpPost("[action]")]
 
-        public async Task<ActionResult<ProductResultModel>> Create([FromForm] ProductCreateModel model, IFormFile ?image)
+        public async Task<ActionResult<ProductResultModel>> Create([FromForm] ProductCreateModel model, IFormFile? image)
         {
             await validator.ValidateAndThrowAsync(model);
-            var product = mapper.Map<Product>(model);            
+            var product = mapper.Map<Product>(model);
 
             if (image != null)
             {
@@ -56,10 +56,10 @@ namespace FreshHub_BE.Controllers
                 var path = Path.Combine(hostEnvironment.WebRootPath, "Images", image.FileName);
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
-                    image.CopyTo(stream); 
+                    image.CopyTo(stream);
                 }
             }
-            else 
+            else
             {
                 product.PhotoUrl = "";
             }
@@ -77,7 +77,7 @@ namespace FreshHub_BE.Controllers
             {
                 return BadRequest("iNVALID CATEGORY ID");
             }
-            return Ok(( productRepository.GetAllByCategory(Id)).ProjectTo<ProductResultModel>(mapper.ConfigurationProvider));
+            return Ok((productRepository.GetAllByCategory(Id)).ProjectTo<ProductResultModel>(mapper.ConfigurationProvider));
         }
 
         [HttpGet("[action]/{Id}")]
@@ -91,6 +91,28 @@ namespace FreshHub_BE.Controllers
             var p = await productRepository.GetById(Id);
 
             return Ok(mapper.Map<ProductResultModel>(p));
+        }
+
+        [Authorize(Policy = "ModeratorRole")]
+        [HttpPut("[action]/{Id}")]
+
+        public async Task<ActionResult<ProductResultModel>> UpdateProduct(int Id, [FromForm] ProductCreateModel model, IFormFile? image)
+        {
+            await validator.ValidateAndThrowAsync(model);
+            var product = mapper.Map<Product>(model);
+
+            if (image != null)
+            {
+                product.PhotoUrl = image.FileName;
+                var path = Path.Combine(hostEnvironment.WebRootPath, "Images", image.FileName);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    image.CopyTo(stream);
+                }
+            }
+            product.Id = Id;
+            await productRepository.Update(product);
+            return Ok(product);
         }
     }
 }

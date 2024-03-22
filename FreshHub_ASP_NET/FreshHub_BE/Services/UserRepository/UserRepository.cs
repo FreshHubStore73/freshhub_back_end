@@ -42,5 +42,10 @@ namespace FreshHub_BE.Services.UserRepository
             await appDbContext.SaveChangesAsync();
             
         }
+
+        public async Task<Boolean> CheckPhoneNumber(string phoneNumber)
+        {
+            return await appDbContext.Users.AnyAsync(x => x.PhoneNumber == phoneNumber);
+        }
     }
 }

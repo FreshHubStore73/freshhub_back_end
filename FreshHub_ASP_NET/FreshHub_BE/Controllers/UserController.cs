@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using FreshHub_BE.Data.Entities;
+using FreshHub_BE.Extensions;
 using FreshHub_BE.Models;
 using FreshHub_BE.Services.TokenService;
 using FreshHub_BE.Services.UserRepository;
@@ -8,15 +9,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace FreshHub_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
-    {        
+    {
         private readonly IValidator<UserLoginModel> loginValidator;
         private readonly IValidator<UserRegistrationModel> registrationValidator;
         private readonly UserManager<User> userManager;
@@ -25,12 +24,12 @@ namespace FreshHub_BE.Controllers
         private readonly IMapper mapper;
         private readonly IUserRepository userRepository;
 
-        public UserController(IValidator<UserLoginModel> loginValidator,            IValidator<UserRegistrationModel> registrationValidator,
+        public UserController(IValidator<UserLoginModel> loginValidator, IValidator<UserRegistrationModel> registrationValidator,
                               UserManager<User> userManager, ITokenService tokenService,
                               IUserRepository userRepository,
                               RoleManager<Role> roleManager,
                               IMapper mapper)
-        {            
+        {
             this.loginValidator = loginValidator;
             this.registrationValidator = registrationValidator;
             this.userManager = userManager;
@@ -56,7 +55,7 @@ namespace FreshHub_BE.Controllers
             if (!roleResult.Succeeded)
             {
                 return BadRequest(result.Errors);
-            }           
+            }
 
             return Ok();
         }
@@ -96,6 +95,31 @@ namespace FreshHub_BE.Controllers
             int id = int.Parse(id_!.Value);
 
             return await userRepository.GetById(id);
+        }
+
+        [Authorize]
+        [HttpPut("[action]")]
+        public async Task<ActionResult> Update([FromBody] EditUserModel editUser)
+        {
+            int id = HttpContext.User.GetUserId();
+
+            var user = await userManager.FindByIdAsync(id.ToString());
+
+            user.FirstName = editUser.FirstName;
+            user.LastName = editUser.LastName;
+            if (await userRepository.CheckPhoneNumber(editUser.PhoneNumber))
+            {
+                return BadRequest("This phone number is exsists.");
+            }
+            user.PhoneNumber = editUser.PhoneNumber;
+
+            var result = await userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+            return BadRequest();
         }
 
 

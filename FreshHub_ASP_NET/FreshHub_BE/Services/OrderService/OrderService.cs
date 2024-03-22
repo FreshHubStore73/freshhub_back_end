@@ -4,6 +4,7 @@ using FreshHub_BE.Enums;
 using FreshHub_BE.Models;
 using System;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace FreshHub_BE.Services.OrderService
 {
@@ -75,7 +76,7 @@ namespace FreshHub_BE.Services.OrderService
                     Floor = orderWithOutCartModel.Floor
                 },
                 NumberPerson = orderWithOutCartModel.NumberPerson,
-                CreatedDate = orderWithOutCartModel.CreateDate,
+                CreatedDate = orderWithOutCartModel.CreateDate ?? DateTime.UtcNow,
                 OrderStatusId = 1,
                 Payment = orderWithOutCartModel.Payment,
                 PaymentStatus = orderWithOutCartModel.PaymentStatus,
@@ -83,6 +84,7 @@ namespace FreshHub_BE.Services.OrderService
                 Recipient = orderWithOutCartModel.Recipient,
                 UserId = userId
             };
+            
 
             order.OrderDatails = orderWithOutCartModel.Items.Select(ci => new OrderDatail
             {
@@ -92,8 +94,23 @@ namespace FreshHub_BE.Services.OrderService
                 Price = ci.Price
             }).ToList();
 
+            if (order.Payment.Equals("cash", StringComparison.OrdinalIgnoreCase))
+            {
+                if (order.CashSum < order.OrderDatails.Sum(x => x.Price))
+                {
+                    throw new System.Exception("Invalid summ.");
+                }
+            }
+
             await dbContext.Orders.AddAsync(order);
+            try
+            {
             await dbContext.SaveChangesAsync();
+
+            }catch(System.Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
 
             return new OrderResultModel
             {
@@ -119,6 +136,7 @@ namespace FreshHub_BE.Services.OrderService
         {
             return await dbContext.Orders
                 .Include(o => o.OrderStatus)
+                .Include(o => o.DeliveryAddress)
                 .Include(o => o.OrderDatails)
                     .ThenInclude(o => o.Product)
                         .ThenInclude(o => o.Category)

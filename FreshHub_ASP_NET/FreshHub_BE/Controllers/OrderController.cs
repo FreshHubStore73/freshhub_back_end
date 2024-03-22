@@ -4,10 +4,12 @@ using FreshHub_BE.Enums;
 using FreshHub_BE.Extensions;
 using FreshHub_BE.Models;
 using FreshHub_BE.Services.OrderService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FreshHub_BE.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OrderController : ControllerBase
@@ -42,6 +44,7 @@ namespace FreshHub_BE.Controllers
             return Ok(result);
         }
 
+        [HttpPost("[Action]")]
         public async Task<ActionResult<OrderResultModel>> CreateWithOutCart([FromBody] OrderWithOutCartModel orderWithOutCart)
         {
             int userId = User.GetUserId();
