@@ -89,12 +89,12 @@ namespace FreshHub_BE.Controllers
 
         [Authorize]
         [HttpGet("[action]")]
-        public async Task<ActionResult<User>> GetInfoAboutUser()
+        public async Task<ActionResult<UserInfoModel>> GetInfoAboutUser()
         {
             var id_ = HttpContext.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
             int id = int.Parse(id_!.Value);
 
-            return await userRepository.GetById(id);
+            return mapper.Map<UserInfoModel>(await userRepository.GetById(id));
         }
 
         [Authorize]
@@ -105,13 +105,15 @@ namespace FreshHub_BE.Controllers
 
             var user = await userManager.FindByIdAsync(id.ToString());
 
-            user.FirstName = editUser.FirstName;
+            user.FirstName = editUser.FirstName;           
             user.LastName = editUser.LastName;
-            if (await userRepository.CheckPhoneNumber(editUser.PhoneNumber))
+            if (user.PhoneNumber != editUser.PhoneNumber && await userRepository.CheckPhoneNumber(editUser.PhoneNumber))
             {
                 return BadRequest("This phone number is exsists.");
             }
             user.PhoneNumber = editUser.PhoneNumber;
+            user.UserName = editUser.PhoneNumber;
+            user.NormalizedUserName = editUser.PhoneNumber;
 
             var result = await userManager.UpdateAsync(user);
 

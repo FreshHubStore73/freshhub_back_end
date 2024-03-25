@@ -32,7 +32,17 @@ namespace FreshHub_BE.Services.UserRepository
 
         public async Task<User> GetById(int userId)
         {
-            return await appDbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            return await appDbContext.Users
+                .Include(x => x.Carts)
+                .ThenInclude(x => x.CartItems)
+                .ThenInclude(x => x.Product)
+                .Include(x => x.Orders)
+                .ThenInclude(x => x.OrderDatails)
+                .ThenInclude(x => x.Product)
+                .Include(x => x.Orders)
+                .ThenInclude(x => x.OrderStatus)                
+                .FirstOrDefaultAsync(x => x.Id == userId);
+
 
         }
 

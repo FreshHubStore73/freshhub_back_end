@@ -25,7 +25,8 @@ namespace FreshHub_BE.Helpers
 
 
             CreateMap<CartItemModel, CartItem>();
-            CreateMap<CartItem, CartItemResultModel>();               
+            CreateMap<CartItem, CartItemResultModel>();
+            CreateMap<User, UserInfoModel>();
 
         }
     }
