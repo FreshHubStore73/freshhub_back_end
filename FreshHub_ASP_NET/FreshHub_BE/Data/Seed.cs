@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace FreshHub_BE.Data
-{
+{ 
     public class Seed
     {
         public static async Task SeedCategory(AppDbContext appDbContext)

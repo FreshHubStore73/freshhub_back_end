@@ -30,7 +30,8 @@ namespace FreshHub_BE.Services.OrderService
                     Floor = orderModel.Floor
                 },
                 NumberPerson = orderModel.NumberPerson,
-                CreatedDate = orderModel.CreateDate,
+                CreatedDate = orderModel.CreateDate ?? DateTime.UtcNow,
+                DeliveryTime = orderModel.DeliveryTime ?? DateTime.UtcNow.AddMinutes(20),
                 OrderStatusId = 1,               
                 Payment = orderModel.Payment,
                 PaymentStatus = orderModel.PaymentStatus,
@@ -121,11 +122,12 @@ namespace FreshHub_BE.Services.OrderService
 
         public async Task<List<Order>> GetAll() // for admin
         {
+
             return await dbContext.Orders
                 .Include(o => o.OrderStatus)
                 .Include(o => o.DeliveryAddress)
                 .Include(o => o.OrderDatails)
-                    .ThenInclude(o => o.Product)
+                   .ThenInclude(o => o.Product)
                 .Include(o => o.User)
                 .Where(o => o.OrderStatus.Name == "In progress")
                 .AsNoTracking()
@@ -148,11 +150,13 @@ namespace FreshHub_BE.Services.OrderService
         {
             var order = await dbContext.Orders
                 .Include(o => o.OrderStatus)
+                .Include(o => o.DeliveryAddress)
                 .Include(o => o.OrderDatails)
                     .ThenInclude(o => o.Product)
                         .ThenInclude(o => o.Category)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.Id == orderId);
+
             return new OrderResultModel
             {
                 Id = orderId,
@@ -171,7 +175,7 @@ namespace FreshHub_BE.Services.OrderService
             }
 
             order.OrderStatus = dbContext.OrderStatus.First(o => o.Id == 3);
-
+            await dbContext.SaveChangesAsync();
            
         }
 

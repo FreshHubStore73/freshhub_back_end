@@ -3,12 +3,14 @@ using FreshHub_BE.Data.Entities;
 using FreshHub_BE.Extensions;
 using FreshHub_BE.Models;
 using FreshHub_BE.Services.CartRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FreshHub_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CartController : ControllerBase
     {
         private readonly ICartRepository cartRepository;

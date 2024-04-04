@@ -12,7 +12,7 @@ namespace FreshHub_BE.Helpers
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => src.CreatedDate))                
                 .ForMember(dest => dest.CartItems, opt => opt.MapFrom(src => src.CartItems));
 
-            CreateMap<User, UserWithRoleModels>().ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.UserRoles.Select(x => x.Role)));
+            CreateMap<User, UserWithRoleModels>().ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.UserRoles.Select(x => x.Role.Name)));
 
             CreateMap<Product, ProductResultModel>()
                 .ForMember(dest => dest.PhotoUrl, opt => opt.MapFrom(src => ImagePathCreator.CreatePath(src.PhotoUrl)))

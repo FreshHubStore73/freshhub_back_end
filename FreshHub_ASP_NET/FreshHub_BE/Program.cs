@@ -20,16 +20,16 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions { WebRootPath = "wwwroot"});
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     //if (builder.Environment.IsProduction())
-    {
-        opt.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),new MySqlServerVersion(new Version(8, 0)));
-    }
+    //{
+    //    opt.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),new MySqlServerVersion(new Version(8, 0))); //
+    //}
    // else
     {
-    //    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("FreshHub_BE"));
+        opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("FreshHub_BE"));
     }
 
 });
@@ -112,6 +112,7 @@ builder.Services.AddControllers().AddJsonOptions(opt =>
 });
 
 var app = builder.Build();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseExceptionMiddleware();
 app.UseSwagger();

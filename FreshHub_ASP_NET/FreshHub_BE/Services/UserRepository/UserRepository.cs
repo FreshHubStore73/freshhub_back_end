@@ -36,6 +36,7 @@ namespace FreshHub_BE.Services.UserRepository
                 .Include(x => x.Carts)
                 .ThenInclude(x => x.CartItems)
                 .ThenInclude(x => x.Product)
+                .ThenInclude(x => x.Category)
                 .Include(x => x.Orders)
                 .ThenInclude(x => x.OrderDatails)
                 .ThenInclude(x => x.Product)
