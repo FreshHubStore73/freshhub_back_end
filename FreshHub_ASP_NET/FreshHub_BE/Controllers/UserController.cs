@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace FreshHub_BE.Controllers
 {
@@ -22,13 +23,15 @@ namespace FreshHub_BE.Controllers
         private readonly ITokenService tokenService;
         private readonly RoleManager<Role> roleManager;
         private readonly IMapper mapper;
+        private readonly IValidator<EditUserModel> validator;
         private readonly IUserRepository userRepository;
 
         public UserController(IValidator<UserLoginModel> loginValidator, IValidator<UserRegistrationModel> registrationValidator,
                               UserManager<User> userManager, ITokenService tokenService,
                               IUserRepository userRepository,
                               RoleManager<Role> roleManager,
-                              IMapper mapper)
+                              IMapper mapper,
+                              IValidator<EditUserModel> validator)
         {
             this.loginValidator = loginValidator;
             this.registrationValidator = registrationValidator;
@@ -36,6 +39,7 @@ namespace FreshHub_BE.Controllers
             this.tokenService = tokenService;
             this.roleManager = roleManager;
             this.mapper = mapper;
+            this.validator = validator;
             this.userRepository = userRepository;
         }
 
@@ -101,6 +105,8 @@ namespace FreshHub_BE.Controllers
         [HttpPut("[action]")]
         public async Task<ActionResult> Update([FromBody] EditUserModel editUser)
         {
+            await validator.ValidateAndThrowAsync(editUser);
+
             int id = HttpContext.User.GetUserId();
 
             var user = await userManager.FindByIdAsync(id.ToString());

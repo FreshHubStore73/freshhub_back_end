@@ -28,10 +28,7 @@ namespace FreshHub_BE.Services.Registration
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                //Email = " ", // spagetiCode
-                //Password = hmac.ComputeHash(Encoding.UTF8.GetBytes(user.Password)),
-               // Salt = hmac.Key
+                PhoneNumber = user.PhoneNumber                               
             };
 
             dbContext.Users.Add(saveUser);

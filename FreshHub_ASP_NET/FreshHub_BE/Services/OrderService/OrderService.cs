@@ -69,7 +69,7 @@ namespace FreshHub_BE.Services.OrderService
             {
                 CashSum = orderWithOutCartModel.CashSum,
                 Call = orderWithOutCartModel.Call,
-                Comment = orderWithOutCartModel.Comment,
+                Comment = orderWithOutCartModel.Comment, 
                 DeliveryAddress = new DeliveryAddress
                 {
                     StreetHouse = orderWithOutCartModel.StreetHouse,
@@ -188,7 +188,7 @@ namespace FreshHub_BE.Services.OrderService
 
         public async Task Update(OrderModel orderModel, int userId)
         {
-            var order = await dbContext.Orders.FirstOrDefaultAsync(o => o.Id == orderModel.Id);
+            var order = await dbContext.Orders.Include(x => x.DeliveryAddress).FirstOrDefaultAsync(o => o.Id == orderModel.Id);
 
 
             order.CashSum = orderModel.CashSum;

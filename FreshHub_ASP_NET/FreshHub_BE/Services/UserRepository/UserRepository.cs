@@ -1,4 +1,5 @@
-﻿using FreshHub_BE.Data;
+﻿using FluentValidation;
+using FreshHub_BE.Data;
 using FreshHub_BE.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,10 +8,12 @@ namespace FreshHub_BE.Services.UserRepository
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext appDbContext;
+        private readonly IValidator<User> validator;
 
         public UserRepository(AppDbContext appDbContext)
         {
             this.appDbContext = appDbContext;
+            this.validator = validator;
         }
         //public async Task<User> Create(User user)
         //{
@@ -49,6 +52,7 @@ namespace FreshHub_BE.Services.UserRepository
 
         public async Task Update(User user)
         {
+            await validator.ValidateAndThrowAsync(user);
             appDbContext.Entry(user).State = EntityState.Modified;
             await appDbContext.SaveChangesAsync();
             

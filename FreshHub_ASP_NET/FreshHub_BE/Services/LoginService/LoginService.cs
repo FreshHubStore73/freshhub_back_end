@@ -41,6 +41,6 @@ namespace FreshHub_BE.Services.LoginService
                 PhoneNumber = model.PhoneNumber,
                 Token = tokenService.CreateToken(user),
             };
-        }
+        } 
     }
 }
